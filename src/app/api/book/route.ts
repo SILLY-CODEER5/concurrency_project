@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getClient } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   const { seatId, userId } = await request.json();
@@ -8,51 +8,49 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing seatId or userId' }, { status: 400 });
   }
 
-  const client = await getClient();
-
   try {
-    // Begin transaction
-    await client.query('BEGIN');
+    await prisma.$transaction(async (tx) => {
+      // 1. Pessimistic Lock: SELECT FOR UPDATE SKIP LOCKED
+      // Prisma $queryRaw returns an array of rows.
+      const lockResult: any[] = await tx.$queryRaw`
+        SELECT * FROM seats 
+        WHERE id = ${seatId} AND status = 'AVAILABLE' 
+        FOR UPDATE SKIP LOCKED
+      `;
 
-    // 1. Pessimistic Lock: SELECT FOR UPDATE SKIP LOCKED
-    // This locks the specific seat row so no other transaction can read it for update.
-    // If another transaction has it locked, SKIP LOCKED ensures we immediately return 0 rows 
-    // instead of waiting for the lock to release, which is great for fast-failing in high concurrency.
-    const lockResult = await client.query(
-      `SELECT * FROM seats WHERE id = $1 AND status = 'AVAILABLE' FOR UPDATE SKIP LOCKED`,
-      [seatId]
-    );
+      if (lockResult.length === 0) {
+        // Seat is either already booked or currently being booked by another transaction.
+        // Throwing an error rolls back the transaction automatically.
+        throw new Error('SEAT_LOCKED');
+      }
 
-    if (lockResult.rows.length === 0) {
-      // Seat is either already booked or currently being booked by another transaction
-      await client.query('ROLLBACK');
+      // 2. Update seat status using Prisma ORM
+      await tx.seats.update({
+        where: { id: seatId },
+        data: { status: 'BOOKED' },
+      });
+
+      // 3. Create booking record using Prisma ORM
+      await tx.bookings.create({
+        data: {
+          user_id: userId,
+          seat_id: seatId,
+        },
+      });
+    }, {
+      maxWait: 15000, // default is 2000
+      timeout: 15000, // default is 5000
+    });
+
+    return NextResponse.json({ success: true, message: 'Seat booked successfully!' });
+  } catch (error: any) {
+    if (error.message === 'SEAT_LOCKED') {
       return NextResponse.json(
         { error: 'Seat is no longer available or is locked by another user.' },
         { status: 409 } // Conflict
       );
     }
-
-    // 2. Update seat status
-    await client.query(
-      `UPDATE seats SET status = 'BOOKED' WHERE id = $1`,
-      [seatId]
-    );
-
-    // 3. Create booking record
-    await client.query(
-      `INSERT INTO bookings (user_id, seat_id) VALUES ($1, $2)`,
-      [userId, seatId]
-    );
-
-    // Commit transaction
-    await client.query('COMMIT');
-
-    return NextResponse.json({ success: true, message: 'Seat booked successfully!' });
-  } catch (error) {
-    await client.query('ROLLBACK');
     console.error('Booking transaction failed:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  } finally {
-    client.release();
   }
 }

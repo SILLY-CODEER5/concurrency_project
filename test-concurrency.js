@@ -1,5 +1,5 @@
 async function testConcurrency() {
-  const seatId = 2; // Assuming seat with ID 2 is available
+  const seatId = 3; // Assuming seat with ID 3 is available
   const url = 'http://localhost:3000/api/book';
   
   console.log(`Starting concurrency test: 20 users trying to book seat ${seatId} at the EXACT same time...`);
