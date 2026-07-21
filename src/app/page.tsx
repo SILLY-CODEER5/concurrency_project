@@ -94,10 +94,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans selection:bg-emerald-500/30">
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        <header className="mb-12 text-center relative">
-          <div className="absolute top-0 right-0 -mt-6">
-            <Link href="/admin" className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded-lg text-sm font-medium transition-colors border border-neutral-800 flex items-center gap-2">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <header className="mb-8 sm:mb-12 text-center relative flex flex-col sm:block items-center">
+          <div className="w-full flex justify-end mb-6 sm:mb-0 sm:absolute sm:top-0 sm:right-0 sm:-mt-6 sm:w-auto">
+            <Link href="/admin" className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded-lg text-sm font-medium transition-colors border border-neutral-800 flex items-center gap-2 shadow-lg sm:shadow-none">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -105,7 +105,7 @@ export default function Home() {
               Admin
             </Link>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent mb-3 sm:mb-4 px-2">
             {event?.name}
           </h1>
           <p className="text-neutral-400 text-lg flex items-center justify-center gap-2">
@@ -135,13 +135,13 @@ export default function Home() {
           </div>
         )}
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
-          <div className="mb-10 text-center">
-            <div className="inline-block w-48 h-2 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
-            <p className="text-neutral-500 text-sm mt-2 font-medium tracking-widest uppercase">Stage</p>
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-3xl p-4 sm:p-8 shadow-2xl backdrop-blur-xl">
+          <div className="mb-8 sm:mb-10 text-center">
+            <div className="inline-block w-32 sm:w-48 h-2 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
+            <p className="text-neutral-500 text-xs sm:text-sm mt-2 font-medium tracking-widest uppercase">Stage</p>
           </div>
 
-          <div className="grid grid-cols-5 sm:grid-cols-10 gap-3">
+          <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 sm:gap-3">
             {seats.map((seat) => {
               const isAvailable = seat.status === 'AVAILABLE';
               const isLoading = isBooking === seat.id;
@@ -152,7 +152,7 @@ export default function Home() {
                   onClick={() => handleBook(seat.id)}
                   disabled={!isAvailable || isBooking !== null}
                   className={`
-                    relative group aspect-square rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-300
+                    relative group aspect-square rounded-xl flex items-center justify-center text-xs sm:text-sm font-semibold transition-all duration-300
                     ${isAvailable 
                       ? 'bg-neutral-800 hover:bg-emerald-500 hover:text-white text-neutral-400 border border-neutral-700/50 hover:border-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:-translate-y-1' 
                       : 'bg-neutral-950 text-neutral-700 border border-neutral-900 cursor-not-allowed opacity-60'}
@@ -172,18 +172,18 @@ export default function Home() {
             })}
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-8 text-sm">
+          <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-neutral-800 border border-neutral-700"></div>
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-neutral-800 border border-neutral-700"></div>
               <span className="text-neutral-400">Available</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-neutral-950 border border-neutral-900"></div>
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-neutral-950 border border-neutral-900"></div>
               <span className="text-neutral-600">Booked</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div>
-              <span className="text-neutral-400">Selected / Hover</span>
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div>
+              <span className="text-neutral-400">Selected</span>
             </div>
           </div>
         </div>

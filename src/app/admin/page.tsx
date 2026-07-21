@@ -132,17 +132,17 @@ export default function AdminPanel() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans selection:bg-emerald-500/30">
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        <header className="mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <header className="mb-8 sm:mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-1 sm:mb-2">
               Admin Control Panel
             </h1>
-            <p className="text-neutral-400">
+            <p className="text-neutral-400 text-sm sm:text-base">
               Manage your ticketing events.
             </p>
           </div>
-          <Link href="/" className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg text-sm font-medium transition-colors">
+          <Link href="/" className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto text-center">
             &larr; Back to App
           </Link>
         </header>
@@ -158,10 +158,10 @@ export default function AdminPanel() {
         )}
 
         {event && (
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             {/* Event Details Card */}
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 shadow-xl backdrop-blur-xl">
-              <h2 className="text-xl font-bold mb-4 text-emerald-400">{event.name}</h2>
+            <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-xl">
+              <h2 className="text-lg sm:text-xl font-bold mb-4 text-emerald-400">{event.name}</h2>
               
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between border-b border-neutral-800 pb-2">
@@ -201,8 +201,8 @@ export default function AdminPanel() {
             </div>
 
             {/* Actions Card */}
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 shadow-xl backdrop-blur-xl">
-              <h2 className="text-xl font-bold mb-6 text-white">Update Event Settings</h2>
+            <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-xl">
+              <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-white">Update Event Settings</h2>
               
               <form onSubmit={handleUpdateDate} className="space-y-4">
                 <div>
