@@ -2,7 +2,7 @@ async function testConcurrency() {
   const seatId = 4; // Assuming seat with ID 4 is available
   const url = 'http://localhost:3000/api/book';
 
-  console.log(`Starting concurrency test: 20 users trying to book seat ${seatId} at the EXACT same time...`);
+  console.log(`Starting concurrency test: 10000 users trying to book seat ${seatId} at the EXACT same time...`);
 
   const requests = [];
   for (let i = 1; i <= 10000; i++) {
@@ -41,7 +41,7 @@ async function testConcurrency() {
 
   console.log('\n--- RESULTS ---');
   console.log(`Successes (should be 1): ${successes}`);
-  console.log(`Conflicts (should be 19): ${conflicts}`);
+  console.log(`Conflicts (should be 9999): ${conflicts}`);
   console.log(`Errors: ${errors}`);
 
   if (successes === 1 && conflicts === 9999) {
