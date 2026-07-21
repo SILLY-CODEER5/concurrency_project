@@ -10,7 +10,16 @@ If the backend simply checks if a seat is available and then updates it, a **rac
 
 ## 💡 The Solution
 
-This platform solves the concurrency problem at the database level by leveraging **ACID Transactions** and **Pessimistic Locking** through Prisma's Interactive Transactions.
+To build a truly resilient system, this platform solves the concurrency problem using a **Two-Tiered Defense System**:
+
+### Tier 1: In-Memory Lock (The First Line of Defense)
+When 10,000 users try to book simultaneously, allowing all 10,000 requests to hit the database would exhaust the PostgreSQL connection pool (the "Thundering Herd" problem) and crash the backend.
+To prevent this, we use a rapid **In-Memory Lock** directly in the Next.js API route layer:
+1. The first request instantly acquires the lock and proceeds to the database.
+2. The remaining 9,999 requests fail the memory check in microseconds and are returned a `409 Conflict` without ever opening a database connection.
+
+### Tier 2: Database Row-Level Locking (The Ultimate Source of Truth)
+For the request that proceeds (or in distributed serverless environments where memory locks are isolated), we leverage **ACID Transactions** and **Pessimistic Locking** through Prisma's Interactive Transactions.
 
 When a user attempts to book a seat, the backend executes the following logic:
 ```typescript
@@ -74,13 +83,17 @@ await prisma.$transaction(async (tx) => {
    ```
    *Visit `http://localhost:3000` to interact with the seat map.*
 
-## 🧪 Load Testing Concurrency
+## 🧪 Load Testing Concurrency (10,000 Users)
 
-To prove the locking mechanism works, this repository includes a concurrency load testing script. 
+To prove the locking mechanism and connection pool protection works, this repository includes a concurrency load testing script capable of firing 10,000 simultaneous requests. 
 Run the following command while your server is running:
 
 ```bash
 node test-concurrency.js
 ```
 
-This script fires 20 simultaneous HTTP POST requests to book the exact same seat at the exact same millisecond. You will observe that exactly **1 request succeeds**, and the other 19 fail gracefully with a `409 Conflict` (Seat Locked), demonstrating perfect database consistency under pressure.
+This script simulates 10,000 users attempting to book the exact same seat at the exact same millisecond. 
+You will observe that:
+- Exactly **1 request succeeds** (`200 OK`).
+- Thousands of requests fail gracefully with a `409 Conflict` (Seat Locked) rejected by the in-memory lock without crashing the database.
+- (Depending on your system limits, Node.js native `fetch` may exhaust local sockets resulting in local `fetch failed` client errors, but the backend remains fully stable).
